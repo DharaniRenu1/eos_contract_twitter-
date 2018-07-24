@@ -1,0 +1,47 @@
+#include<eosiolib/eosio.hpp>
+#include<eosiolib/print.hpp>
+
+using namespace eosio;
+
+using std::string;
+
+class Hospital : public eosio::contract 
+{
+	using contract::contract;
+	struct table
+	{
+		uint64_t doctor_id;
+		account_name doctor_name;
+		uint64_t doctor_rate;
+
+		uint64_t primary_key() const {return doctor_name;}
+
+		EOSLIB_SERIALIZE(table, (doctor_id)(doctor_name)(doctor_rate));
+
+//		EOSIO_SERIALIZE(doctors,(doctor_id)(doctor_name)(doctor_rate));
+	};
+
+	typedef multi_index<N(table),table>  table1;
+		public:
+
+	void doctable(uint64_t _id,account_name _name,uint64_t _rate)
+	{
+
+	table1 doctor(_self,_self);
+
+	auto i = doctor.find(_name);
+
+	if(i==doctor.end())
+	{
+		doctor.emplace(_self,[&](auto& doc1)
+		{
+			doc1.doctor_id=_id;
+			doc1.doctor_name=_name;
+			doc1.doctor_rate=_rate;
+		});
+
+	}
+	}
+
+};
+EOSIO_ABI(Hospital, (doctable))

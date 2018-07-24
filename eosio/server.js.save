@@ -1,0 +1,93 @@
+Eos = require('eosjs')
+
+fs = require('fs')
+wif = '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3'
+pubkey = 'EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV'
+
+
+config = {keyProvider: ['5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3'], httpEndpoint: 'http://127.0.0.1:8888'
+         }
+config.binaryen = require("binaryen")
+eos = Eos.Localnet(config)
+/*
+eos.transaction(tr => {
+  tr.newaccount({
+    creator: 'eosio',
+    name: 'issue1',
+    owner: pubkey,
+    active: pubkey
+  })
+
+  tr.buyrambytes({
+    payer: 'eosio',
+    receiver: 'issue1',
+    bytes: 8192
+  })
+
+  tr.delegatebw({
+    from: 'eosio',
+    receiver: 'issue1',
+    stake_net_quantity: '10.0000 SYS',
+    stake_cpu_quantity: '10.0000 SYS',
+    transfer: 0
+  })
+})
+*/
+/*
+
+wasm = fs.readFileSync(`eosio.token.wasm`);
+abi = fs.readFileSync(`eosio.token.abi`);
+
+eos.setcode('issue1',0,0, wasm,function(err,data){
+if(err)throw err;
+console.log(data);
+});
+
+eos.setabi('issue1', JSON.parse(abi),(err,data)=>{
+if(err)throw err;
+console.log(data);
+});
+*/
+
+eos.transaction('my1', myaccount => {
+
+  myaccount.create('my1', '10.000 TOK', {scope: [ "my1"], authorization: ['my1']})
+
+
+  myaccount.issue('my1', '10.000 TOK', 'my1',{scope: [ "my1"], authorization: ['my1']})
+})
+
+
+/*
+eos.transaction('my1', myaccount =>{
+        myaccount.transfer('my1','my','1.000 TOK@my1','eosio', {scope: [ "my1"], authorization: ['my1']});
+
+})
+
+
+
+
+
+eos.getCurrencyBalance('accont', 'accont', 'TOK',(err,data) => {
+if(err) throw err;
+console.log(data);
+})
+
+
+
+
+
+
+
+
+
+/*
+eos.transaction('acc', myaccount => {
+
+  myaccount.create('acc', '10.000 TOK', {scope: [ "acc"], authorization: ['acc']})
+
+
+  myaccount.issue('acc', '10.000 TOK', 'acc',{scope: [ "acc"], authorization: ['acc']})
+})
+*/
+

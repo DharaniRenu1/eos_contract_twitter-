@@ -1,0 +1,34 @@
+doctype html
+html
+  body
+    center
+      div
+        form(method="post", action="/wallet/create")
+          table
+            tr
+              td
+                input(type="text", name="acc_name")
+            | 					
+            tr
+              td
+                input(type="submit", value="Create")
+      | 		
+      form(method="post")
+        table
+          tr
+            td
+              input(type="text", name="aname")
+          | 					
+          tr
+            td
+              input(type="submit", value="Wasm", formaction="/wallet/wasm")
+            td
+              input(type="submit", value="Abi", formaction="/wallet/abi")
+      | 		
+      div
+        form(method="post", action="/wallet/sum")
+          table
+            tr
+              td
+                input(type="submit", value="sum")
+

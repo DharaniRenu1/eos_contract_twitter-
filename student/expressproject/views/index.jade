@@ -1,0 +1,165 @@
+doctype html
+html(lang="en")
+  head
+    title Student Marklist
+    |   
+    meta(charset="utf-8")
+    |   
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    |   
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+    |   
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+    |   
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js")
+  body
+    .container
+      h2 Student Details
+      br
+      br
+      |   
+      ul.nav.nav-pills
+        li.active
+          a(data-toggle="pill", href="#home") Account
+        |     
+        li
+          a(data-toggle="pill", href="#menu1") Student Details
+        |     
+        li
+          a(data-toggle="pill", href="#menu2") Modify
+        |     
+        li
+          a(data-toggle="pill", href="#menu3") Erase
+        |       
+        li
+          a(data-toggle="pill", href="#menu4") Show Details
+      |   
+      |   
+      .tab-content
+        #home.tab-pane.fade.in.active
+          br
+          br
+          |      
+          form(method="post")
+            input(type="text", placeholder="Account Name", name="acc_name")
+            br
+            br
+            |       
+            input.btn.btn-primary(type="submit", value="Create", formaction="/wallet/create")
+            br
+            br
+            |       
+            input.btn.btn-primary(type="submit", value="Wasm", formaction="/wallet/wasm")
+            br
+            br
+            |       
+            input.btn.btn-primary(type="submit", value="Abi", formaction="/wallet/abi")
+            br
+            br
+            br
+        |     
+        #menu1.tab-pane.fade
+          br
+          br
+          |      
+          form(method="post")
+            input(type="text", placeholder="Account Name", name="acc_name")
+            br
+            br
+            |       
+            input(type="number", placeholder="Enter your id", name="id")
+            br
+            br
+            |       
+            input(type="text", placeholder="Enter name", name="name")
+            br
+            br
+            |       
+            input(type="number", placeholder="Enter Tamil mark", name="tam")
+            br
+            br
+            |         
+            input(type="number", placeholder="Enter English mark", name="eng")
+            br
+            br
+            |         
+            input(type="number", placeholder="Enter Maths mark", name="mat")
+            br
+            br
+            |        
+            input(type="number", placeholder="Enter science mark", name="sci")
+            br
+            br
+            |  
+            input(type="number", placeholder="Enter social mark", name="ss")
+            br
+            br
+            |       
+            input.btn.btn-primary(type="submit", value="Submit", formaction="/wallet/details")
+            br
+            br
+        |     
+        #menu2.tab-pane.fade
+          br
+          br
+          form(method="post")
+            input(type="text", placeholder="Account Name", name="acc_name")
+            br
+            br
+            |  
+            input(type="text", placeholder="Enter name", name="name")
+            br
+            br
+            |       
+            input(type="text", placeholder="Enter Subject name", name="sub")
+            br
+            br
+            |        
+            input(type="number", placeholder="Enter Subject mark", name="mc")
+            br
+            br
+            |       
+            input.btn.btn-primary(type="submit", value="Modify", formaction="/wallet/modi")
+            br
+            br
+        |     
+        #menu3.tab-pane.fade
+          br
+          br
+          form(method="post")
+            input(type="text", placeholder="Account Name", name="acc_name")
+            br
+            br
+            input(type="text", placeholder="Enter name", name="name")
+            br
+            br
+            |       
+            input.btn.btn-primary(type="submit", value="Erase", formaction="/wallet/erase")
+            br
+            br
+        |     
+        #menu4.tab-pane.fade
+          br
+          br
+          |      
+          form(method="post")
+            input(type="text", placeholder="Account Name", name="acc_name")
+            br
+            br
+            |       
+            input(type="text", placeholder="Enter your scope", name="scope")
+            br
+            br
+            |       
+            input(type="text", placeholder="Enter your code", name="code")
+            br
+            br
+            |       
+            input(type="text", placeholder="Enter your table", name="table")
+            br
+            br
+            |       
+            input.btn.btn-primary(type="submit", value="Show Details", formaction="/wallet/doc")
+            br
+            br
+

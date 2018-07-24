@@ -1,0 +1,65 @@
+kkhtml
+  body
+    center
+      h3 Storing and Retrieving values
+      |     
+      form(method="post")
+        input(type="text", placeholder="Account Name", name="acc_name")
+        br
+        br
+        |       
+        input.btn.btn-primary(type="submit", value="Create", formaction="/wallet/create")
+        br
+        br
+        |       
+        input.btn.btn-primary(type="submit", value="Wasm", formaction="/wallet/wasm")
+        br
+        br
+        |       
+        input.btn.btn-primary(type="submit", value="Abi", formaction="/wallet/abi")
+        br
+        br
+        br
+        |       
+        input(type="text", placeholder="Enter your id", name="id")
+        br
+        br
+        |       
+        input(type="text", placeholder="Enter your name", name="name")
+        br
+        br
+        |       
+        input.btn.btn-primary(type="submit", value="details", formaction="/wallet/details")
+        br
+        br
+        |       
+        |      
+        input(type="text", placeholder="Enter your id", name="id")
+        br
+        br
+        |       
+        input(type="text", placeholder="Enter your name", name="name")
+        br
+        br
+        |       
+        input.btn.btn-primary(type="submit", value="details", formaction="/wallet/modi")
+        br
+        br
+      |     
+      form(method="post")
+        input(type="text", placeholder="Enter your scope", name="scope")
+        br
+        br
+        |       
+        input(type="text", placeholder="Enter your code", name="code")
+        br
+        br
+        |       
+        input(type="text", placeholder="Enter your table", name="table")
+        br
+        br
+        |       
+        input.btn.btn-primary(type="submit", value="Create", formaction="/wallet/doc")
+        br
+        br
+
