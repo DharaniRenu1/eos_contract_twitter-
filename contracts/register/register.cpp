@@ -1,6 +1,6 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/print.hpp>
-#include <eosiolib/vector.hpp>
+
 using namespace eosio;
 using namespace std;
 
@@ -92,27 +92,39 @@ public :
                 account_name name;
                 std::vector<account_name> namef;
                 uint64_t primary_key() const {return name;}
-
                 EOSLIB_SERIALIZE(follow, (name)(namef))
 
         };
 
         typedef multi_index<N(follow),follow> follow1;
 
-        ///@abi table unfollow i64
+        ///@abi table following i64
 
-        struct unfollow
+        struct following
         {
-                account_name uname;
-                std::vector<account_name> unamef;
-                uint64_t primary_key() const {return uname;}
-
-                EOSLIB_SERIALIZE(unfollow, (uname)(unamef))
+                account_name me;
+                std::vector<account_name> tofollow;
+                uint64_t primary_key() const {return me;}
+                EOSLIB_SERIALIZE(following, (me)(tofollow))
 
         };
 
-        typedef multi_index<N(unfollow),unfollow> unfollow1;
+        typedef multi_index<N(following),following> following1;
 
+
+	///@abi action like
+
+	struct like
+	{
+		account_name lname;
+		std::vector<string>post;
+		std::vector<uint64_t> lc;
+		uint64_t primary_key() const {return lname;}
+                EOSLIB_SERIALIZE(like, (lname)(post)(lc))
+
+	};
+
+	typedef multi_index<N(like),like> like1;
 
 	///@abi action
 
@@ -194,18 +206,29 @@ public :
                         });
                 }
 
-                unfollow1 twit6(_self,_self);
+                following1 twit7(_self,_self);
 
-                auto i6 = twit6.find(ac_name);
+                auto i7 = twit7.find(ac_name);
 
-                if(i6 == twit6.end())
+                if(i7 == twit7.end())
                 {
-                        twit6.emplace(_self, [&](auto& unfollow)
+                        twit7.emplace(_self, [&](auto& following)
                         {
-                                unfollow.uname = ac_name;
+                                following.me = ac_name;
                         });
                 }
 
+                like1 twit8(_self,_self);
+
+                auto i8 = twit8.find(ac_name);
+
+                if(i8 == twit8.end())
+                {
+                        twit8.emplace(_self, [&](auto& like)
+                        {
+                                like.lname = ac_name;
+                        });
+                }
 
 
         }
@@ -235,6 +258,15 @@ public :
 
 	void chat(account_name ac_name,string msg)
 	{
+
+		twitreg1 twitter(_self,_self);
+
+                auto ii = twitter.find(ac_name);
+
+		if(ii == twitter.end())
+		{
+			print("you're requested to create an account");
+		}
 
 		twitcou1 twit(_self,_self);
 
@@ -275,6 +307,17 @@ public :
 
 	void personal(account_name fname,account_name tname,string msg)
 	{
+
+		twitreg1 twitter(_self,_self);
+
+                auto ii = twitter.find(fname);
+
+                if(ii == twitter.end())
+                {
+                        print("you're requested to create an account");
+                }
+
+
 		from1 twit(_self,_self);
 
 		auto i = twit.find(fname);
@@ -317,7 +360,125 @@ public :
 
 	void follower(account_name name,account_name namef)
 	{
+
+		twitreg1 twitter(_self,_self);
+
+                auto ii = twitter.find(name);
+
+                if(ii == twitter.end())
+                {
+                        print("you're requested to create an account");
+                }
+
+
 		follow1 twit(_self,_self);
+
+		auto i = twit.find(name);
+
+		if(i != twit.end())
+		{
+			twit.modify(i,_self,[&](auto& follow)
+			{
+				follow.name = name;
+				follow.namef.push_back(namef);
+			});
+
+			followings(name,namef);
+                }
+
+	}
+
+
+        ///@abi action
+
+        void followings(account_name name,account_name namef)
+        {
+
+		twitreg1 twitter(_self,_self);
+
+                auto ii = twitter.find(name);
+
+                if(ii == twitter.end())
+                {
+                        print("you're requested to create an account");
+                }
+
+
+                follow1 twit1(_self,_self);
+
+                auto i1 = twit1.find(name);
+
+                if(i1 == twit1.end())
+                {
+                        print("you're requested to create an account");
+                }
+
+		following1 twit(_self,_self);
+
+                auto i = twit.find(name);
+
+                if(i != twit.end())
+                {
+                        twit.modify(i,_self,[&](auto& following)
+                        {
+                                following.me = name;
+                                following.tofollow.push_back(namef);
+                        });
+                }
+        }
+
+
+
+        ///@abi action
+
+	void unfollower(account_name uname,account_name unamef)
+        {
+
+               twitreg1 twitter(_self,_self);
+
+               auto ii = twitter.find(uname);
+
+               if(ii == twitter.end())
+               {
+                       print("you're requested to create an account");
+               }
+
+		follow1 twit(_self,_self);
+
+		auto i1 = twit.find(uname);
+
+		auto i2 = twit.get(uname);
+
+		if(i1 != twit.end())
+		{
+			for(uint64_t i =0; i < i2.namef.size();i++)
+			{
+					if(unamef == i2.namef.at(i))
+					 {
+						twit.modify(i1,_self,[&](auto& unfollow)
+						{
+							unfollow.namef.erase( unfollow.namef.begin() + i);
+						});
+					}
+			}
+		}
+
+        }
+
+	///@abi action
+
+	void post(account_name name,string post)
+	{
+                twitreg1 twitter(_self,_self);
+
+                auto ii = twitter.find(name);
+
+                if(ii == twitter.end())
+                {
+                        print("you're requested to create an account");
+                }
+
+		like1 twit(_self,_self);
 
 		auto i = twit.find(name);
 
@@ -327,35 +488,32 @@ public :
 		}
 		else
 		{
-			twit.modify(i,_self,[&](auto& follow)
+			twit.modify(i,_self,[&](auto & like)
 			{
-				follow.name = name;
-				follow.namef.push_back(namef);
+				like.lname=name;
+				like.post.push_back(post);
 			});
 		}
 	}
 
-        ///@abi action
 
-        void unfollower(account_name uname,account_name unamef)
-        {
-                unfollow1 twit(_self,_self);
+	///@abi action
 
-                auto i = twit.find(uname);
+	void like(account_name lname,uint64_t count)
+	{
+                twitreg1 twitter(_self,_self);
 
-                if(i == twit.end())
+                auto ii = twitter.find(lname);
+
+                if(ii == twitter.end())
                 {
                         print("you're requested to create an account");
                 }
-                else
-                {
-                        twit.modify(i,_self,[&](auto& unfollow)
-                        {
-                                unfollow.uname = uname;
-                                unfollow.unamef.std::remove(unamef);
-                        });
-                }
-        }
+
+		like1 twit(_self,_self);
+
+	}
+
 
 	///@abi action
 
@@ -377,5 +535,5 @@ public :
         }
 };
 
-EOSIO_ABI(twitter, (tregister)(modifyreg)(personal)(chat)(follower)(unfollower)(del));
+EOSIO_ABI(twitter, (tregister)(modifyreg)(personal)(chat)(follower)(followings)(unfollower)(post)(like)(del));
 
