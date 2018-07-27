@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 config = {
     chainId: '038f4b0fc8ff18a4f0842a8f0564611f6e96e8535901dd45e43ac8691a1c4dca', // Jungle Testnet  http://dev.cryptolions.io:38888/v1/chain/get_info
     keyProvider: ['5J9CoSF9pErmFzjKreu2WHjqc6NxPW7Peme5owQa3V9wtVA1hZu'], // <----- existing account (active) private key that has ram cpu and bandwidth already purchased
-    httpEndpoint: 'http://79.137.175.6:8888', // jungle testnet
+    httpEndpoint: 'http://dev.cryptolions.io:38888', // jungle testnet
     expireInSeconds: 60,
     broadcast: true,
     debug: true,
