@@ -1,3 +1,4 @@
+
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/print.hpp>
 
@@ -117,7 +118,7 @@ public :
 	struct like
 	{
 		account_name lname;
-		std::vector<uint64_t> like_c;
+		std::vector<account_name> like_c;
 		uint64_t count;
 		uint64_t primary_key() const {return lname;}
                 EOSLIB_SERIALIZE(like, (lname)(like_c)(count))
@@ -126,48 +127,45 @@ public :
 
 	typedef multi_index<N(like),like> like1;
 
-        ///@abi table dislike i64
+        ///@abi table unlike i64
 
-        struct dislike
+        struct unlike
         {
-                account_name dname;
-                std::vector<uint64_t> dislike_c;
-                uint64_t count;
-                uint64_t primary_key() const {return dname;}
-                EOSLIB_SERIALIZE(dislike, (dname)(dislike_c)(count))
+                account_name ulname;
+                std::vector<account_name> unlike_c;
+		uint64_t count;
+                uint64_t primary_key() const {return ulname;}
+                EOSLIB_SERIALIZE(unlike, (ulname)(unlike_c)(count))
 
         };
 
-        typedef multi_index<N(dislike),dislike> dislike1;
+        typedef multi_index<N(unlike),unlike> unlike1;
 
-        ///@abi table share i64
+	///@abi table share i64
 
-        struct share
-        {
-                account_name poster;
-		std::vector<account_name>sh_name;
-                std::vector<uint64_t> time;
-                uint64_t primary_key() const {return poster;}
-                EOSLIB_SERIALIZE(share, (poster)(sh_name)(time))
+	struct share
+	{
+		account_name poster;
+		account_name pname;
+		std::vector<uint64_t> sh_time;
+		uint64_t primary_key() const {return poster;}
+		EOSLIB_SERIAIZE(share,(poster)(pname)(sh_time))
+	};
 
-        };
+	typedef multi_index<N(share),share> share1;
 
-        typedef multi_index<N(share),share> share1;
+	///@abi table post_sh i64
 
-        ///@abi table post_sh i64
+	struct post_sh
+	{
+		account_name poster;
+		account_name sh_name;
+		std::vector<string> post_msg;
+		uint64_t primary_key() const {return poster;}
+		EOSLIB_SERIALIZE(post_sh,(poster)(sh_name)(post_msg))
+	};
 
-        struct post_sh
-        {
-                account_name poster1;
-                std::vector<account_name> po_name;
-                std::vector<string> post_msg;
-                uint64_t primary_key() const {return poster1;}
-                EOSLIB_SERIALIZE(post_sh, (poster1)(po_name)(post_msg))
-
-        };
-
-        typedef multi_index<N(post_sh),post_sh> post_sh1;
-
+	typedef multi_index<N(post_sh),post_sh> post_sh1;
 
 	///@abi action
 
@@ -273,19 +271,20 @@ public :
                         });
                 }
 
-                dislike1 twit9(_self,_self);
+                unlike1 twit9(_self,_self);
 
                 auto i9 = twit9.find(ac_name);
 
                 if(i9 == twit9.end())
                 {
-                        twit9.emplace(_self, [&](auto& like)
+                        twit9.emplace(_self, [&](auto& unlike)
                         {
-                                like.dname = ac_name;
+                                unlike.ulname = ac_name;
                         });
                 }
 
-                share1 twit10(_self,_self);
+
+		share1 twit10(_self,_self);
 
                 auto i10 = twit10.find(ac_name);
 
@@ -303,13 +302,11 @@ public :
 
                 if(i11 == twit11.end())
                 {
-                        twit11.emplace(_self, [&](auto& post)
+                        twit11.emplace(_self, [&](auto& post_share)
                         {
-                                post.poster1 = ac_name;
+                                post_share.poster = ac_name;
                         });
                 }
-
-
 
 
 
@@ -612,24 +609,24 @@ public :
                 else
                 {
 
-		like1 twit(_self,_self);
+		like1 twit2(_self,_self);
 
-		auto i3 = twit.find(lname);
+		auto i3 = twit2.find(lname);
 
-		if(i3 != twit.end())
+		if(i3 != twit2.end())
 		{
 
 			for(uint64_t j=0;j<i2.time.size();j++)
 			{
 				if(i2.time.at(j) == time)
 				{
-					auto i4 = twit.get(lname);
+					auto i4 = twit2.get(lname);
 
-					for(uint64_t k=0;k<i4.like_c.size();k++)
+					for(uint64_t k = 0;k < i4.like_c.size();k++)
 					{
-						if(liken == i4.like_c.at(k))
+						if(i4.like_c.at(k) != liken)
 						{
-							twit.modify(i3,_self,[&](auto& like)
+							twit2.modify(i3,_self,[&](auto& like)
 							{
 								like.like_c.push_back(liken);
 								like.count += 1;
@@ -637,12 +634,13 @@ public :
 						}
 						else
 						{
-							twit.modify(i3,_self,[&](auto& like)
-                                                        {
-                                                                like.like_c.erase(like.like_c.begin() + k);
-                                                                like.count -= 1;
-                                                        });
+							twit2.modify(i3,_self,[&](auto& unlike)
+							{
+								unlike.like_c.erase(unlike.like_c.begin() + k);
+								unlike.count -=1;
+							});
 						}
+
 					}
 				}
 			}
@@ -651,12 +649,11 @@ public :
 
 	}
 
+        ///@abi action
 
-	///@abi action
 
-
-	void disliking(account_name lname,account_name disliken,uint64_t time)
-	{
+        void dislike(account_name lname,account_name disliken,uint64_t time)
+        {
                 twitreg1 twitter(_self,_self);
 
                 auto ii = twitter.find(lname);
@@ -665,13 +662,14 @@ public :
                 {
                         print("you're requested to create an account");
                 }
-
+		else
+		{
 
                 twitmsg1 twit1(_self,_self);
 
                 auto i1 = twit1.find(lname);
 
-		auto i2 = twit1.get(lname);
+                auto i2 = twit1.get(lname);
 
                 if(i1 == twit1.end())
                 {
@@ -680,57 +678,58 @@ public :
                 else
                 {
 
-		dislike1 twit(_self,_self);
+                unlike1 twit2(_self,_self);
 
-		auto i3 = twit.find(lname);
+                auto i3 = twit2.find(lname);
 
-		if(i3 != twit.end())
-		{
+                if(i3 != twit2.end())
+                {
 
-			for(uint64_t j=0;j<i2.time.size();j++)
-			{
-				if(i2.time.at(j) == time)
-				{
-					auto i4 = twit.get(lname);
+                        for(uint64_t j=0;j<i2.time.size();j++)
+                        {
+                                if(i2.time.at(j) == time)
+                                {
+                                        auto i4 = twit2.get(lname);
 
-					for(uint64_t k=0;k<i4.dislike_c.size();k++)
-					{
-						if(disliken == i4.dislike_c.at(k))
-						{
-							twit.modify(i3,_self,[&](auto& like)
-							{
-								like.dislike_c.push_back(disliken);
-								like.count += 1;
-							});
-						}
-						else
-						{
-							twit.modify(i3,_self,[&](auto& like)
+                                        for(uint64_t k = 0;k < i4.unlike_c.size();k++)
+                                        {
+                                                if(i4.unlike_c.at(k) != disliken)
+                                                {
+                                                        twit2.modify(i3,_self,[&](auto& dislike)
                                                         {
-                                                                like.dislike_c.erase(like.dislike_c.begin() + k);
-                                                                like.count -= 1;
+                                                                dislike.unlike_c.push_back(disliken);
+								dislike.count += 1;
                                                         });
-						}
-					}
-				}
-			}
+                                                }
+                                                else
+                                                {
+                                                        twit2.modify(i3,_self,[&](auto& like)
+                                                        {
+                                                                like.unlike_c.erase(like.unlike_c.begin() + k);
+								like.count -=1;
+                                                        });
+                                                }
+
+                                        }
+                                }
+                        }
+                }
+                }
+
 		}
-		}
-
-	}
-
-/*	  EOSLIB_SERIALIZE(share, (poster)(sh_name)(time))
-                EOSLIB_SERIALIZE(post_sh, (poster1)(po_name)(post_msg))*/
 
 
+        }
 
+/*	  EOSLIB_SERIAIZE(share,(poster)(pname)(sh_time))
+                EOSLIB_SERIALIZE(post_sh,(poster)(sh_name)(post_msg)) */
 
 	///@abi action
 
-	void sharing(account_name poster,account_name sh_name,account_name po_name,string post_msg)
+	void share(account_name poster,account_name sharing,account_name shared,string msg)
 	{
 
-                twitreg1 twitter(_self,_self);
+	        twitreg1 twitter(_self,_self);
 
                 auto ii = twitter.find(poster);
 
@@ -738,50 +737,12 @@ public :
                 {
                         print("you're requested to create an account");
                 }
-
-		auto ii1 = twitter.find(po_name);
-
-                if(ii1 == twitter.end())
-                {
-                        print("you're requested to create an account");
-                }
-
-		auto ii2 = twitter.find(sh_name);
-
-                if(ii2 == twitter.end())
-                {
-                        print("you're requested to create an account");
-                }
-
-		share1 twit(_self,_self);
-
-		auto i = twit.find(poster);
-
-		if(i != twit.end())
+                else
 		{
-			twit.modify(i,_self,[&](auto& share)
-			{
-				share.sh_name.push_back(sh_name);
-				share.time.push_back(now());
-			});
-
-			post_sh1 twit1(_self,_self);
-
-			auto i1 = twit1.find(poster);
-
-			if(i1 != twit1.end())
-			{
-				twit1.modify(i1,_self,[&](auto& post)
-				{
-					post.po_name.push_back(po_name);
-					post.post_msg.push_back(post_msg);
-				});
-			}
-
+			
 		}
-
-
 	}
+
 
 
 	///@abi action
@@ -804,5 +765,5 @@ public :
         }
 };
 
-EOSIO_ABI(twitter, (tregister)(modifyreg)(personal)(chat)(follower)(followings)(unfollower)(unfollowing)(liking)(del)(disliking)(sharing));
+EOSIO_ABI(twitter, (tregister)(modifyreg)(personal)(chat)(follower)(followings)(unfollower)(unfollowing)(liking)(del)(dislike));
 
